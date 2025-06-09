@@ -1,0 +1,33 @@
+name: Build ndstool
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential
+
+    - name: Build ndstool
+      run: make
+
+    - name: Check build output
+      run: |
+        if [ -f ndstool ]; then
+          echo "ndstool built successfully"
+          ./ndstool --version || echo "No version info"
+        else
+          echo "Build failed: ndstool executable missing"
+          exit 1
+        fi
