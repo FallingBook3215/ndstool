@@ -5,7 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:   # This enables manual triggering
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,16 +18,22 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential
+        sudo apt-get install -y build-essential cmake
+
+    - name: Create build directory
+      run: mkdir build
+
+    - name: Configure with CMake
+      run: cmake -S . -B build
 
     - name: Build ndstool
-      run: make
+      run: cmake --build build
 
     - name: Check build output
       run: |
-        if [ -f ndstool ]; then
+        if [ -f build/ndstool ]; then
           echo "ndstool built successfully"
-          ./ndstool --version || echo "No version info"
+          ./build/ndstool --version || echo "No version info"
         else
           echo "Build failed: ndstool executable missing"
           exit 1
